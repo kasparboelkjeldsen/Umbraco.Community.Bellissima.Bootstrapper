@@ -10,7 +10,11 @@
     "remove-umbraco": "node build/umbraco.js remove-umbraco",
     "usync": "node build/umbraco.js usync",
     "generate": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 openapi-ts --file openapi-ts.config.ts",
-    "publish": "node build/umbraco.js publish"
+    "publish": "node build/umbraco.js publish",
+    "skills:copilot": "npx skills add umbraco/Umbraco-CMS-Backoffice-Skills --skill '*' -a github-copilot",
+    "skills:cursor": "npx skills add umbraco/Umbraco-CMS-Backoffice-Skills --skill '*' -a cursor",
+    "skills:windsurf": "npx skills add umbraco/Umbraco-CMS-Backoffice-Skills --skill '*' -a windsurf",
+    "skills:claude": "npx skills add umbraco/Umbraco-CMS-Backoffice-Skills --skill '*' -a claude"
   },
   "keywords": [],
   "author": "",
@@ -19,9 +23,8 @@
     "lit": "^3.1.4"
   },
   "devDependencies": {
-    "@hey-api/openapi-ts": "^0.52.5",
     "@types/node": "^22.2.0",
-    "@umbraco-cms/backoffice": "^14.0.0",
+    "@umbraco-cms/backoffice": "^15.0.0",
     "cross-env": "^7.0.3",
     "dotenv": "^16.4.5",
     "eslint": "^9.9.0",

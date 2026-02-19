@@ -4,7 +4,7 @@ import { customElement } from "lit/decorators.js";
 import { V1Service } from "../api";
 
 
-@customElement('knowit-section-view')
+@customElement('Bellissima-section-view')
 export class SectionView extends UmbElementMixin(LitElement) {
 
   #apiresult = '';
@@ -32,6 +32,6 @@ export default SectionView;
 
 declare global {
   interface HTMLElementTagNameMap {
-    'knowit-section-view': SectionView;
+    'Bellissima-section-view': SectionView;
   }
 }

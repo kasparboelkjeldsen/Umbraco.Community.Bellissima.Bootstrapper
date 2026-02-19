@@ -2,10 +2,10 @@ import { execSync } from 'child_process';
 import { resolve, join, dirname } from 'path';
 import { existsSync, readdirSync, statSync } from 'fs';
 import { fileURLToPath } from 'url';
+import { resolveUmbracoVersion } from './version-resolver.js';
 
-export default function testUmbraco(args) {
-    const defaultUmbracoVersion = "14.1.1";
-    const umbracoVersion = args[0] || defaultUmbracoVersion;
+export default async function testUmbraco(args) {
+    const umbracoVersion = await resolveUmbracoVersion(args[0]);
     const projectName = `Umbraco-${umbracoVersion}-nuget`;
 
     // Get the current directory in ES module context

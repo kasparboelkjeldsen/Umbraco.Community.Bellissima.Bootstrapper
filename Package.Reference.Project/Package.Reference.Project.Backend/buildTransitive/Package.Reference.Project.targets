@@ -8,7 +8,7 @@
 		<ItemGroup>
 			<PackageReferenceProjectContentFiles Include="$(PackageReferenceProjectContentFilesPath)" />
 		</ItemGroup>
-		<Message Text="Copying knowit-instantblockpreview files: $(PackageReferenceProjectContentFilesPath) - #@(PackageReferenceProjectContentFiles->Count()) files" Importance="high" />
+		<Message Text="Copying Package.Reference.Project files: $(PackageReferenceProjectContentFilesPath) - #@(PackageReferenceProjectContentFiles->Count()) files" Importance="high" />
 		<Copy SourceFiles="@(PackageReferenceProjectContentFiles)" DestinationFiles="@(PackageReferenceProjectContentFiles->'$(MSBuildProjectDirectory)\wwwroot\app_plugins\PackageReferenceProject.frontend\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
 	</Target>
 
@@ -16,7 +16,7 @@
 		<ItemGroup>
 			<PackageReferenceProjectDir Include="$(MSBuildProjectDirectory)\wwwroot\app_plugins\PackageReferenceProject.frontend\" />
 		</ItemGroup>
-		<Message Text="Clear old knowit-instantblockpreview data" Importance="high" />
+		<Message Text="Clear old Package.Reference.Project data" Importance="high" />
 		<RemoveDir Directories="@(PackageReferenceProjectDir)" />
 	</Target>
 

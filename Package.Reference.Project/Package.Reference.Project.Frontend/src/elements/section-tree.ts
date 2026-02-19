@@ -2,7 +2,7 @@ import { UmbElementMixin } from "@umbraco-cms/backoffice/element-api";
 import { html, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
 
-@customElement('knowit-section-tree')
+@customElement('Bellissima-section-tree')
 export class SectionTree extends UmbElementMixin(LitElement) {
 
     constructor() {
@@ -18,6 +18,6 @@ export default SectionTree;
 
 declare global {
   interface HTMLElementTagNameMap {
-    'knowit-section-tree': SectionTree;
+    'Bellissima-section-tree': SectionTree;
   }
 }

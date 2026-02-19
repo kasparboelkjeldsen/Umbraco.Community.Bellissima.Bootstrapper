@@ -2,10 +2,10 @@ import { execSync } from 'child_process';
 import { resolve, join, dirname } from 'path';
 import { existsSync, rmSync } from 'fs';
 import { fileURLToPath } from 'url';
+import { resolveUmbracoVersion } from './version-resolver.js';
 
-export default function removeUmbraco(args) {
-    const defaultUmbracoVersion = "14.1.1";
-    const umbracoVersion = args[0] || defaultUmbracoVersion;
+export default async function removeUmbraco(args) {
+    const umbracoVersion = await resolveUmbracoVersion(args[0]);
 
     // Get the current directory in ES module context
     const __filename = fileURLToPath(import.meta.url);

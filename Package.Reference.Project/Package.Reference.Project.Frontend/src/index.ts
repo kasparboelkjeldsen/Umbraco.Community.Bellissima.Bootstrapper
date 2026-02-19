@@ -1,28 +1,16 @@
 import { UmbEntryPointOnInit } from '@umbraco-cms/backoffice/extension-api';
 import { ManifestSection, ManifestSectionView, ManifestSectionSidebarApp } from '@umbraco-cms/backoffice/extension-registry';
-import { UMB_AUTH_CONTEXT } from '@umbraco-cms/backoffice/auth';
 import { OpenAPI } from './api/index.ts';
 
 export const onInit: UmbEntryPointOnInit = async (_host, extensionRegistry) => {
-    
-
-    _host.consumeContext(UMB_AUTH_CONTEXT, async (auth) => {
-        if (!auth) return;
-
-        const umbOpenApi = auth.getOpenApiConfiguration();
-        OpenAPI.BASE = umbOpenApi.base;
-        OpenAPI.TOKEN = umbOpenApi.token;
-        OpenAPI.WITH_CREDENTIALS = umbOpenApi.withCredentials;
-        OpenAPI.CREDENTIALS = umbOpenApi.credentials;
-    });
     
     const section : ManifestSection = {
         alias: 'myCustomSection',
         name: 'My Custom Section',
         type: 'section',
         meta: {
-            label: 'Knowit',
-            pathname: 'knowit'
+            label: 'Bellissima',
+            pathname: 'Bellissima'
         }
     }
 
@@ -30,11 +18,11 @@ export const onInit: UmbEntryPointOnInit = async (_host, extensionRegistry) => {
         alias: 'myCustomSectionView',
         name: 'My Custom Section View',
         type: "sectionView",
-        elementName: "knowit-section-view",
+        elementName: "Bellissima-section-view",
         js: () => import('./elements/section-view'),
         meta: {
-            label: 'Knowit',
-            pathname: 'knowit',
+            label: 'Bellissima',
+            pathname: 'Bellissima',
             icon: 'icon-umb-contour',
         },
         conditions: [
@@ -49,7 +37,7 @@ export const onInit: UmbEntryPointOnInit = async (_host, extensionRegistry) => {
         alias: 'myCustomSectionTree',
         name: 'My Custom Section Tree',
         type: 'sectionSidebarApp',
-        elementName: 'knowit-section-tree',
+        elementName: 'Bellissima-section-tree',
         js: () => import('./elements/section-tree'),
         conditions: [
             {

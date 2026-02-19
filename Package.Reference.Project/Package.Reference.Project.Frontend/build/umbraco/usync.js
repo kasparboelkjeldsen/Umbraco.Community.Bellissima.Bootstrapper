@@ -20,10 +20,28 @@ export default function syncUsync() {
 
     // Loop through each Umbraco folder to find the uSync folder
     umbracoFolders.forEach(folder => {
-        const usyncPath = join(folder, 'usync', 'v14');
+        // Look for usync versioned folders (v14, v15, v16, v17, etc.)
+        const usyncBaseDir = join(folder, 'usync');
+        if (!existsSync(usyncBaseDir)) return;
+
+        // Find versioned subdirectories (v14, v15, v16, v17, etc.)
+        const versionedDirs = readdirSync(usyncBaseDir, { withFileTypes: true })
+            .filter(dirent => dirent.isDirectory() && /^v\d+$/.test(dirent.name))
+            .map(dirent => dirent.name);
+
+        // Use the highest version found
+        const latestVersion = versionedDirs.sort((a, b) => {
+            const numA = parseInt(a.substring(1));
+            const numB = parseInt(b.substring(1));
+            return numB - numA;
+        })[0];
+
+        if (!latestVersion) return;
+
+        const usyncPath = join(usyncBaseDir, latestVersion);
 
         if (existsSync(usyncPath)) {
-            // Get the newest file in the usync/v14 folder and its subfolders
+            // Get the newest file in the usync version folder and its subfolders
             const files = readdirSync(usyncPath, { withFileTypes: true });
             const newestFile = files
                 .filter(file => !file.isDirectory())
@@ -78,6 +96,6 @@ export default function syncUsync() {
             console.log(`Copied usync folder to ${folder}`);
         });
     } else {
-        console.log(`No usync/v14 folders were found in any Umbraco folders.`);
+        console.log(`No usync versioned folders (v14, v15, v16, v17, etc.) were found in any Umbraco folders.`);
     }
 }

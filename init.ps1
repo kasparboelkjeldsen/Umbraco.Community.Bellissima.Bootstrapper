@@ -6,14 +6,52 @@ param (
 
 # Define paths
 $referenceFolder = "Package.Reference.Project"
+$scriptRoot = $PSScriptRoot
+if (-not $scriptRoot) { $scriptRoot = Get-Location }
+
+# Interactive mode if no parameters provided
+if (-not $newProjectName) {
+    Write-Host "=== Umbraco.Community Package Bootstrapper ===" -ForegroundColor Cyan
+    Write-Host ""
+    $newProjectName = Read-Host "Enter project name"
+    
+    if (-not $newProjectName) {
+        Write-Error "Project name is required."
+        exit 1
+    }
+    
+    # Default destination is ./projects relative to script location
+    $destinationPath = Join-Path -Path $scriptRoot -ChildPath "projects"
+    
+    # Create projects folder if it doesn't exist
+    if (-Not (Test-Path $destinationPath)) {
+        New-Item -Path $destinationPath -ItemType Directory -Force | Out-Null
+        Write-Host "Created projects directory at '$destinationPath'" -ForegroundColor Green
+    }
+}
+
 $newProjectFolder = Join-Path -Path $destinationPath -ChildPath $newProjectName
+
+# Check if project already exists
+if (Test-Path $newProjectFolder) {
+    Write-Warning "Project folder '$newProjectFolder' already exists."
+    $response = Read-Host "Delete and recreate? (y/N)"
+    if ($response -eq 'y' -or $response -eq 'Y') {
+        Write-Host "Removing existing project folder..." -ForegroundColor Yellow
+        Remove-Item -Path $newProjectFolder -Recurse -Force
+    } else {
+        Write-Host "Aborting." -ForegroundColor Red
+        exit 0
+    }
+}
 
 # Store the original location
 $originalLocation = Get-Location
 
-# Check if the reference folder exists
-if (-Not (Test-Path $referenceFolder)) {
-    Write-Error "The reference folder '$referenceFolder' does not exist."
+# Check if the reference folder exists (relative to script location)
+$referenceFolderPath = Join-Path -Path $scriptRoot -ChildPath $referenceFolder
+if (-Not (Test-Path $referenceFolderPath)) {
+    Write-Error "The reference folder '$referenceFolderPath' does not exist."
     exit 1
 }
 
@@ -31,7 +69,7 @@ try {
     exit 1
 }
 
-# Copy the reference folder contents to the new project folder, excluding bin and node_modules
+# Copy the reference folder contents to the new project folder, excluding bin, obj, and node_modules
 function Copy-Filtered {
     param (
         [string]$sourcePath,
@@ -40,6 +78,7 @@ function Copy-Filtered {
     # Remove the root from the source path to start copying from the folder contents
     Get-ChildItem -Path $sourcePath -Recurse -Force | Where-Object {
         $_.FullName -notmatch '\\bin($|\\)' -and
+        $_.FullName -notmatch '\\obj($|\\)' -and
         $_.FullName -notmatch '\\node_modules($|\\)'
     } | ForEach-Object {
         # Calculate the relative path from the reference folder to ensure correct path construction
@@ -71,12 +110,13 @@ function Copy-Filtered {
 }
 
 # Start copying from within the reference folder to avoid nesting the entire structure
-Copy-Filtered -sourcePath (Join-Path -Path $PWD -ChildPath $referenceFolder) -destinationPath $newProjectFolder
+Copy-Filtered -sourcePath $referenceFolderPath -destinationPath $newProjectFolder
 
-# Function to rename files and directories, excluding bin and node_modules
+# Function to rename files and directories, excluding bin, obj, and node_modules
 function Rename-ItemsRecursively($path, $oldName, $newName) {
     Get-ChildItem -Path $path -Recurse -Force | Where-Object {
         $_.FullName -notmatch '\\bin($|\\)' -and
+        $_.FullName -notmatch '\\obj($|\\)' -and
         $_.FullName -notmatch '\\node_modules($|\\)'
     } | ForEach-Object {
         $newNamePath = $_.FullName -replace [Regex]::Escape($oldName), $newName
@@ -90,10 +130,11 @@ function Rename-ItemsRecursively($path, $oldName, $newName) {
     }
 }
 
-# Function to replace content within files, excluding bin and node_modules
+# Function to replace content within files, excluding bin, obj, and node_modules
 function Replace-ContentInFiles($path, $oldName, $newName) {
     Get-ChildItem -Path $path -File -Recurse -Force | Where-Object {
         $_.FullName -notmatch '\\bin($|\\)' -and
+        $_.FullName -notmatch '\\obj($|\\)' -and
         $_.FullName -notmatch '\\node_modules($|\\)'
     } | ForEach-Object {
         try {
@@ -110,27 +151,34 @@ Rename-ItemsRecursively -path $newProjectFolder -oldName $referenceFolder -newNa
 # Replace content in files
 Replace-ContentInFiles -path $newProjectFolder -oldName $referenceFolder -newName $newProjectName
 
-Write-Host "Project '$referenceFolder' has been copied and renamed to '$newProjectFolder'."
+Write-Host ""
+Write-Host "✓ Project '$newProjectName' created successfully at '$newProjectFolder'" -ForegroundColor Green
 
 # Navigate to the frontend folder and run npm install
 $frontendFolderPath = Join-Path -Path $newProjectFolder -ChildPath "$newProjectName.Frontend"
 
 if (Test-Path $frontendFolderPath) {
     try {
-        Write-Host "Running npm install in '$frontendFolderPath'."
+        Write-Host ""
+        Write-Host "Installing npm dependencies..." -ForegroundColor Cyan
         Set-Location -Path $frontendFolderPath
         npm install
-        Write-Host "npm install completed successfully in '$frontendFolderPath'."
+        Write-Host "✓ npm install completed successfully" -ForegroundColor Green
     } catch {
         Write-Error "Failed to run npm install in '$frontendFolderPath'."
     } finally {
         # Return to the original location
         Set-Location -Path $originalLocation
-        Write-Host "Returned to the original location: $originalLocation"
     }
 } else {
     Write-Warning "Frontend folder '$frontendFolderPath' does not exist."
     # Return to the original location if the frontend folder doesn't exist
     Set-Location -Path $originalLocation
-    Write-Host "Returned to the original location: $originalLocation"
 }
+
+Write-Host ""
+Write-Host "Next steps:" -ForegroundColor Yellow
+Write-Host "  cd $newProjectFolder"
+Write-Host "  cd $newProjectName.Frontend"
+Write-Host "  npm run init-umbraco"
+Write-Host ""

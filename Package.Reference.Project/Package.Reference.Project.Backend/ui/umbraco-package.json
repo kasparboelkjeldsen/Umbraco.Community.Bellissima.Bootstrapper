@@ -6,8 +6,8 @@
     "version": "0.0.0",
     "extensions": [
         {
-          "name": "knowit-Package.Reference.Project.Frontend EntryPoint",
-          "alias": "knowit-Package.Reference.Project.Frontend.entrypoint",
+          "name": "Umbraco.Community-Package.Reference.Project.Frontend EntryPoint",
+          "alias": "Umbraco.Community-Package.Reference.Project.Frontend.entrypoint",
           "type": "entryPoint",
           "js": "/app_plugins/package.reference.project.frontend/dist.js"
         }

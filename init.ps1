@@ -152,7 +152,7 @@ Rename-ItemsRecursively -path $newProjectFolder -oldName $referenceFolder -newNa
 Replace-ContentInFiles -path $newProjectFolder -oldName $referenceFolder -newName $newProjectName
 
 Write-Host ""
-Write-Host "✓ Project '$newProjectName' created successfully at '$newProjectFolder'" -ForegroundColor Green
+Write-Host "[OK] Project '$newProjectName' created successfully at '$newProjectFolder'" -ForegroundColor Green
 
 # Navigate to the frontend folder and run npm install
 $frontendFolderPath = Join-Path -Path $newProjectFolder -ChildPath "$newProjectName.Frontend"
@@ -163,7 +163,7 @@ if (Test-Path $frontendFolderPath) {
         Write-Host "Installing npm dependencies..." -ForegroundColor Cyan
         Set-Location -Path $frontendFolderPath
         npm install
-        Write-Host "✓ npm install completed successfully" -ForegroundColor Green
+        Write-Host "[OK] npm install completed successfully" -ForegroundColor Green
     } catch {
         Write-Error "Failed to run npm install in '$frontendFolderPath'."
     } finally {

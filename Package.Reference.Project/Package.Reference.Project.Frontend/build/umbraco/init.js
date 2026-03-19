@@ -3,6 +3,7 @@ import { resolve, join, dirname } from 'path';
 import { existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { resolveUmbracoVersion } from './version-resolver.js';
+import { runPostConfiguration } from './post-config.js';
 
 export default async function initUmbraco(args) {
     const umbracoVersion = await resolveUmbracoVersion(args[0]);
@@ -15,6 +16,7 @@ export default async function initUmbraco(args) {
     const solutionFilePath = join(rootDir, 'Package.Reference.Project.sln');
     const umbracoDir = join(rootDir, 'Umbraco');
     const projectDir = join(umbracoDir, projectName); // Path for the version-specific Umbraco project
+    const backendDir = join(rootDir, 'Package.Reference.Project.Backend');
 
     // Check if the solution file exists
     if (!existsSync(solutionFilePath)) {
@@ -51,6 +53,9 @@ export default async function initUmbraco(args) {
 
         console.log(`Adding reference to backend project...`);
         execSync(`dotnet add "${join(projectDir, projectName + '.csproj')}" reference "${join(rootDir, 'Package.Reference.Project.Backend', 'Package.Reference.Project.Backend.csproj')}"`, { stdio: 'inherit' });
+
+        // Run post-configuration
+        runPostConfiguration(projectDir, projectName, backendDir);
 
         console.log(`Umbraco project ${projectName} created and added to the solution in the 'Umbraco' folder.`);
     } catch (error) {

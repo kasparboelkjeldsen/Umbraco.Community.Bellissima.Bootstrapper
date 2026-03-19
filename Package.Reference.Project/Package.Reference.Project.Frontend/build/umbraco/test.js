@@ -3,6 +3,7 @@ import { resolve, join, dirname } from 'path';
 import { existsSync, readdirSync, statSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { resolveUmbracoVersion } from './version-resolver.js';
+import { runPostConfiguration } from './post-config.js';
 
 export default async function testUmbraco(args) {
     const umbracoVersion = await resolveUmbracoVersion(args[0]);
@@ -43,6 +44,9 @@ export default async function testUmbraco(args) {
 
             // Add the newly created project to the solution file in the "Umbraco" solution folder
             execSync(`dotnet sln "${solutionFilePath}" add "${join(projectPath, projectName + '.csproj')}" --solution-folder Umbraco`, { stdio: 'inherit' });
+
+            // Run post-configuration
+            runPostConfiguration(projectPath, projectName, backendProjectPath);
 
             console.log(`Umbraco project ${projectName} created and added to the solution in the 'Umbraco' folder.`);
         } else {
